@@ -1,7 +1,8 @@
 import React,{useEffect, useState} from 'react'
 import {View, StyleSheet,Text, 
         ScrollView, ImageBackground, 
-        ActivityIndicator, TouchableOpacity} from 'react-native'
+        ActivityIndicator, TouchableOpacity,
+        RefreshControl} from 'react-native'
 import baseUrl from '../../Config/baseUrl'
 import { Feather } from '@expo/vector-icons';
 import Details from './Components/Details'
@@ -11,6 +12,7 @@ const HomePage = () => {
   const [name, setName] = useState(false) 
   const [loading, setLoading] = useState(false)
   const [stopLoop, setStopLoop] = useState([])
+  const [refresh, setRefresh] = useState(false)
   useEffect(()=>{
     obtenerPeliculas()
   },[stopLoop])
@@ -37,7 +39,13 @@ const HomePage = () => {
     return layoutMeasurement.height + contentOffset.y >=
     contentSize.height - paddingToBottom;
   }
-
+  const onRefresh= async() =>{
+    setPage(0)
+    setRefresh(true)
+    setElements([])
+    await obtenerPeliculas()
+    setRefresh(false)
+  }
   const showLoadingScroll = () =>{
       return(
         <View style={{width: '100%',
@@ -70,7 +78,13 @@ const HomePage = () => {
         if(finalScroll(nativeEvent)){
           obtenerPeliculas()
         }
-      }}>
+      }}
+    refreshControl={
+      <RefreshControl
+        refreshing={refresh}
+        onRefresh={onRefresh}
+      />
+    }>
         <Elements
           movies={elements}
           getDetailsMovie={getDetailsMovie}
@@ -173,7 +187,7 @@ const styles = StyleSheet.create({
   moviePreview:{
     width: '100%',
     height: 320,
-    borderRadius: 20,
+    borderRadius: 15,
     margin: 5,
     overflow: 'hidden'
   },

@@ -8,7 +8,7 @@ const Details = ({duracion, fecha,
                   descripcion,title, 
                   portada, close}) => {
   const myMenu = [
-    {title: 'Length', description: [{name: duracion}]},
+    {title: 'Length', description: [{name: duracion+' mins'}]},
     {title: 'Release', description:[{name:fecha}]},
     {title: 'Qualification', description: [{name: calificacion}]},
     {title: 'Genre' , description: generos},
@@ -89,7 +89,7 @@ const styles= StyleSheet.create({
   image:{
     width: '100%',
     height: 350,
-    backgroundColor: 'red'
+    backgroundColor: 'black'
   },
   myTitle:{
     fontSize:15,
