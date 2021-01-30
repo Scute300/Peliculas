@@ -1,13 +1,18 @@
 import React from 'react'
 import {View, StyleSheet, 
-  Text, TouchableOpacity, ScrollView} from 'react-native'
+  Text, TouchableOpacity, ScrollView,
+  ImageBackground} from 'react-native'
 
-const Details = (props:any) => {
+const Details = ({duracion, fecha, 
+                  calificacion, generos, 
+                  descripcion,title, 
+                  portada, close}) => {
   const myMenu = [
-    {title: 'Duración', description: ['Descripcion']},
-    {title: 'Fecha de estreno', description: ['Descripcion'] },
-    {title: 'Calificación', description: ['Descripcion']}
-    {title: 'Generos' , }
+    {title: 'Length', description: [{name: duracion}]},
+    {title: 'Release', description:[{name:fecha}]},
+    {title: 'Qualification', description: [{name: calificacion}]},
+    {title: 'Genre' , description: generos},
+    {title: 'Description', description: [{name: descripcion}]}
 
   ]
   return (
@@ -16,15 +21,48 @@ const Details = (props:any) => {
       </View>
       <ScrollView>
         <View style={styles.image}>
+          <ImageBackground 
+          source={{uri:`https://image.tmdb.org/t/p/w500${portada}`}}
+            style={{width: '100%', height: '100%'}}>
+            <View style ={{width: '100%', alignItems:'flex-end', padding: 40}}>
+                <TouchableOpacity onPress={()=>{close()}}>
+                  <Text style={{fontSize:25, color: 'white', fontWeight: 'bold'}}>
+                  X
+                  </Text>
+                </TouchableOpacity>
+            </View>
+          </ImageBackground>
         </View>
         <View style={{padding:15}}>
           <Text style={{fontSize:25, 
                         color: 'white',
                         fontWeight: 'bold',
                         marginBottom: 15}}>
-            Title
+             {title}
           </Text>
-          
+            {
+              myMenu.map((data, index)=>{
+                return (
+                  <View style={{width: '100%'}}>
+                    <Text style={styles.myTitle}>
+                      {data.title}
+                    </Text>
+                    <View style={{flexDirection: 'row', 
+                          flewWrap: 'wrap', width:'100%'}}>
+                    {
+                    data.description.map((data, index)=>{
+                        return (
+                          <Text style={styles.myDescription}>
+                          {data.name+' '}
+                          </Text>                          
+                        )
+                      })
+                    }
+                    </View>
+                  </View>
+                )
+              })
+            }
           
         </View>
       </ScrollView>
@@ -38,8 +76,8 @@ const styles= StyleSheet.create({
   container:{
     position: 'absolute',
     flex:1,
-    width:'107%',
-    height: '107%'
+    width:'102%',
+    height: '100%'
   },
   blockScreen:{
     width: '100%',

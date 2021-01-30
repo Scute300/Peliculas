@@ -1,16 +1,19 @@
 import React,{useEffect, useState} from 'react'
-import {View, StyleSheet,Text, ScrollView, ImageBackground, ActivityIndicator} from 'react-native'
+import {View, StyleSheet,Text, 
+        ScrollView, ImageBackground, 
+        ActivityIndicator, TouchableOpacity} from 'react-native'
 import baseUrl from '../../Config/baseUrl'
 import { Feather } from '@expo/vector-icons';
 import Details from './Components/Details'
 const HomePage = () => {
   const [page, setPage] = useState(1)
   const [elements, setElements] = useState([]) 
-  const [name, setName] = useState(0) 
+  const [name, setName] = useState(false) 
   const [loading, setLoading] = useState(false)
+  const [stopLoop, setStopLoop] = useState([])
   useEffect(()=>{
     obtenerPeliculas()
-  },[name])
+  },[stopLoop])
 
   const obtenerPeliculas = async()=>{
     if(loading == false){
@@ -23,7 +26,7 @@ const HomePage = () => {
       })
       .then((response)=>{
         return response.json()
-      })
+        })
       setElements(elements.concat(pet.results))
       setLoading(false)
     }
@@ -34,19 +37,28 @@ const HomePage = () => {
     return layoutMeasurement.height + contentOffset.y >=
     contentSize.height - paddingToBottom;
   }
-  const details = () =>{
-    if(name == 0){
-      return <Details/>
-    }
-  }
+
   const showLoadingScroll = () =>{
-    if(loading == true){
       return(
         <View style={{width: '100%',
                       alignItems: 'center'}}>
           <ActivityIndicator size='small' color='white'/>
         </View>
       )
+  }
+  const close = ()=>{
+    setName(false)
+  }
+  const getDetailsMovie = async(id:number) => {
+    if(name == false){
+      const detailsUrl =`https://api.themoviedb.org/3/movie/${id}?api_key=634b49e294bd1ff87914e7b9d014daed&language=en-US`
+      const getData = await fetch(detailsUrl, {
+      method: 'GET'
+      })
+      .then((response)=>{
+        return response.json()
+      })
+    setName(getData)
     }
   }
   return(
@@ -61,10 +73,26 @@ const HomePage = () => {
       }}>
         <Elements
           movies={elements}
+          getDetailsMovie={getDetailsMovie}
         />
         {showLoadingScroll()}
       </ScrollView>
-      {details()}
+      {
+        name == false
+        ?
+        null
+        :
+        <Details
+          duracion={name.runtime}
+          fecha={name.release_date}
+          calificacion={name.vote_average}
+          title={name.original_title} 
+          generos={name.genres}
+          descripcion={name.overview}
+          portada={name.backdrop_path}
+          close={close}
+        />
+      }
     </View>
   )
 
@@ -73,9 +101,16 @@ const HomePage = () => {
 export default HomePage
 
 const Elements =  (props:any) => {
-  const url:string ='https://image.tmdb.org/t/p/w500'  
+  const url:string ='https://image.tmdb.org/t/p/w500' 
+  
+
   return props.movies.map((data:any, index:number)=>{
    return(
+     <TouchableOpacity 
+     onPress={()=>{
+        props.getDetailsMovie(data.id)
+     }}
+     style={{width: '45%', marginHorizontal: 5}}>
     <View 
      style={styles.moviePreview}> 
      <ImageBackground 
@@ -115,6 +150,7 @@ const Elements =  (props:any) => {
      </View>
      </ImageBackground>
     </View>
+     </TouchableOpacity>
    ) 
   })
 
@@ -135,7 +171,7 @@ const styles = StyleSheet.create({
     flex:1
   },
   moviePreview:{
-    width: '46%',
+    width: '100%',
     height: 320,
     borderRadius: 20,
     margin: 5,
