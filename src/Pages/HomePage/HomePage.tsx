@@ -28,7 +28,10 @@ const HomePage = () => {
       })
       .then((response)=>{
         return response.json()
-        })
+      })
+      .catch((error)=>{
+        return {results:[]}
+      })
       setElements(elements.concat(pet.results))
       setLoading(false)
     }
@@ -65,6 +68,9 @@ const HomePage = () => {
       })
       .then((response)=>{
         return response.json()
+      })
+      .catch((error)=>{
+        return false
       })
     setName(getData)
     }
